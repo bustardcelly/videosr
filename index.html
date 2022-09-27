@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Video Super Resolution</title>
+    <script src="https://webrtchacks.github.io/adapter/adapter-latest.js"></script>
+    <script src="https://unpkg.com/red5pro-webrtc-sdk@latest/red5pro-sdk.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div id="app">
+      <div id="publisher-container">
+        <video id="red5pro-publisher" class="video" muted controls autoplay playsinline></video>
+        <div id="publisher-stats">
+          <p id="publisher-event">...</p>
+          <p>
+            <span id="publisher-bitrate-stat"></span>
+          </p>
+        </div>
+        <div id="publisher-controls">
+          <p class="setting-field">
+            <label for="resolution-select" class="setting-label">Scale Resolution:</label>
+            <select name="resolution-select" id="resolution-select" class="setting-input">
+              <option value="8.0">1/8</option>
+              <option value="4.0">1/4</option>
+              <option value="2.0">1/2</option>
+              <option value="1.0" selected>Original</option>
+            </select>
+          </p>
+          <button id="start-publish">Start Broadcast</button>
+        </div>
+      </div>
+      <div id="subscriber-container">
+        <video id="red5pro-subscriber" class="video" muted controls autoplay playsinline></video>
+        <div id="subscriber-stats">
+          <p id="subscriber-event">...</p>
+          <p>
+            <span id="subscriber-bitrate-stat"></span>
+          </p>
+        </div>
+        <div id="subscriber-controls">
+          <button id="start-subscribe">Start Subscriber</button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
