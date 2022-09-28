@@ -9,9 +9,13 @@ const publisherEventField = document.querySelector('#publisher-event')
 const publisherBitrateField = document.querySelector('#publisher-bitrate-stat')
 const resolutionSelect = document.querySelector('#resolution-select')
 
+const subscriberVideo = document.querySelector('#red5pro-subscriber')
 const startSubscribeButton = document.querySelector('#start-subscribe')
 const subscriberEventField = document.querySelector('#subscriber-event')
 const subscriberBitrateField = document.querySelector('#subscriber-bitrate-stat')
+
+const canvas = document.getElementById('subscriber-canvas')
+var ctx = canvas.getContext('2d')
 
 let publisher, subscriber
 
@@ -49,6 +53,16 @@ const onSubscriberStats = ({ bitrate }) => {
   subscriberBitrateField.textContent = `Incoming Bitrate: ${Math.round(bitrate)}`
 }
 
+const updateSubscriberCanvas = () => {
+  const { clientWidth, clientHeight, videoWidth, videoHeight } = subscriberVideo
+  canvas.width = videoWidth
+  canvas.height = videoHeight
+  canvas.style.width = `${clientWidth}px`
+  canvas.style.height = `${clientHeight}px`
+  ctx.drawImage(subscriberVideo, 0, 0, videoWidth, videoHeight)
+  requestAnimationFrame(updateSubscriberCanvas)
+}
+
 const startPublish = async () => {
   try {
     publisher = new Publisher().init(config, resolutionSelect.value)
@@ -68,6 +82,7 @@ const startSubscriber = async () => {
     subscriber.delegate = onSubscriberEvent
     await subscriber.start()
     new StatsTracker(onSubscriberStats).start(subscriber.getConnection(), false)
+    updateSubscriberCanvas()
   } catch (e) {
     console.error(e)
   }
