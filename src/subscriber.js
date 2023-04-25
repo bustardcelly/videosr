@@ -23,6 +23,8 @@ class Subscriber {
     }
 
     onSubscriberEvent (event) {
+        const { type } = event
+        if (type === 'Subscribe.Time.Update') return
         console.log(`[Subscriber(${this.config.streamName})]:: ${event.type}`)
         if (this.delegate) {
             this.delegate.call(null, { subscriber: this.subscriber, event })

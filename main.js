@@ -14,10 +14,12 @@ const startSubscribeButton = document.querySelector('#start-subscribe')
 const subscriberEventField = document.querySelector('#subscriber-event')
 const subscriberBitrateField = document.querySelector('#subscriber-bitrate-stat')
 
-const canvas = document.getElementById('subscriber-canvas')
+const canvas = document.querySelector('#subscriber-canvas')
+const imageOut = document.querySelector('#image')
 var ctx = canvas.getContext('2d')
 
 let publisher, subscriber
+const worker = new Worker('/src/worker.js', {type: 'module'})
 
 const config = {
   protocol: 'ws',
@@ -53,13 +55,22 @@ const onSubscriberStats = ({ bitrate }) => {
   subscriberBitrateField.textContent = `Incoming Bitrate: ${Math.round(bitrate)}`
 }
 
-const updateSubscriberCanvas = () => {
+const updateSubscriberCanvas = async () => {
   const { clientWidth, clientHeight, videoWidth, videoHeight } = subscriberVideo
-  canvas.width = videoWidth
-  canvas.height = videoHeight
-  canvas.style.width = `${clientWidth}px`
-  canvas.style.height = `${clientHeight}px`
+  if (videoWidth === 0 || videoHeight === 0) {
+    requestAnimationFrame(updateSubscriberCanvas)
+    return
+  }
+
+  canvas.width = imageOut.width = videoWidth
+  canvas.height = imageOut.height = videoHeight
+  canvas.style.width = imageOut.style.width = `${clientWidth}px`
+  canvas.style.height = imageOut.style.height = `${clientHeight}px`
   ctx.drawImage(subscriberVideo, 0, 0, videoWidth, videoHeight)
+  const base64 = canvas.toDataURL()
+  imageOut.src = base64
+  console.log('PROCESS > ')
+  worker.postMessage({ img: ctx.getImageData(0, 0, videoWidth, videoHeight) }, [ctx])
   requestAnimationFrame(updateSubscriberCanvas)
 }
 
@@ -92,3 +103,9 @@ startPublishButton.addEventListener('click', startPublish)
 resolutionSelect.addEventListener('change', onResolutionChange)
 
 startSubscribeButton.addEventListener('click', startSubscriber)
+
+worker.addEventListener('message', event => {
+  console.log('PROCESSED')
+  const { data } = event
+  imageOut.src = data
+})

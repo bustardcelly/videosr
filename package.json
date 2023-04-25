@@ -10,5 +10,10 @@
   },
   "devDependencies": {
     "vite": "^3.1.0"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^3.20.0",
+    "install": "^0.13.0",
+    "npm": "^8.19.2"
   }
 }
